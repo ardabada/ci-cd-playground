@@ -3,10 +3,10 @@ name: Utils release
 on:
   push:
     branches: [ main ]
-    paths: [ src/Arda.Utilities/* ]
+    paths: [ 'src/Arda.Utilities/**' ]
   pull_request:
     branches: [ main ]
-    paths: [ src/Arda.Utilities/* ]
+    paths: [ 'src/Arda.Utilities/**' ]
     
 env:
   PROJECT_PATH: 'src/Arda.Utilities/Arda.Utilities.sln'
