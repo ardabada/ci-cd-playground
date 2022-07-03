@@ -3,5 +3,6 @@
   <PropertyGroup>
 	<RootNamespace>Arda.Utilities</RootNamespace>
 	<AssemblyName>Arda.Utilities</AssemblyName>
+	 <Description>test</Description>
   </PropertyGroup>
 </Project>
