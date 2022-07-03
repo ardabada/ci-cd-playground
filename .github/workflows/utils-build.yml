@@ -4,9 +4,6 @@ on:
   push:
     branches-ignore: [ main ]
     paths: [ 'src/Arda.Utilities/**' ]
-  pull_request:
-    branches-ignore: [ main ]
-    paths: [ 'src/Arda.Utilities/**' ]
     
 env:
   PROJECT_PATH: 'src/Arda.Utilities/Arda.Utilities.sln'
