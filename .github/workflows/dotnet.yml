@@ -38,4 +38,4 @@ jobs:
     - name: PushGithub
       # The github token is automatically being pulled from the workflow
       #run: dotnet nuget push **/*.nupkg --no-symbols --skip-duplicate 
-      run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}\*.nupkg -k ${{ github.token }} -s ${{ env.NUGET_SOURCE_URL }}
+      run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}/*.nupkg -k ${{ github.token }} -s ${{ env.NUGET_SOURCE_URL }}
