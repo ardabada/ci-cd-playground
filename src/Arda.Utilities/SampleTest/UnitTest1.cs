@@ -13,8 +13,7 @@ namespace SampleTest
         [Fact]
         public void Test2()
         {
-            bool x = false;
-            Assert.True(x);
+            Assert.True(false);
         }
     }
 }
