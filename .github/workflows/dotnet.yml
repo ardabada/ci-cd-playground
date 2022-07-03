@@ -13,8 +13,8 @@ env:
   MAJOR: 1
   MINOR: 0
   PATCH: ${{ github.run_number }}
-  NugetVersion: ${{ MAJOR }}.${{ MINOR }}.${{ PATCH }}
-  VersionArgs: /p:Version=${{ NugetVersion }} /p:AssemblyVersion=${{ NugetVersion }} /p:FileVersion=${{ NugetVersion }}
+  NugetVersion: ${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}
+  VersionArgs: /p:Version=${{ env.NugetVersion }} /p:AssemblyVersion=${{ env.NugetVersion }} /p:FileVersion=${{ env.NugetVersion }}
   
 jobs:
   build:
