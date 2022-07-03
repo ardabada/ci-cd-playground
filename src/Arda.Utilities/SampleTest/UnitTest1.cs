@@ -9,5 +9,12 @@ namespace SampleTest
         {
             Assert.True(true);
         }
+
+        [Fact]
+        public void Test2()
+        {
+            bool x = false;
+            Assert.True(x);
+        }
     }
 }
