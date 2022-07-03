@@ -34,12 +34,12 @@ jobs:
       run: dotnet restore ${{ env.PROJECT_PATH }}
       
     - name: Build
-      run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore ${{ VersionArgs }}
+      run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore ${{ env.VersionArgs }}
    # - name: Test
    #   run: dotnet test --no-restore --verbosity normal
    
     - name: Pack
-      run: dotnet pack ${{ env.PROJECT_PATH }} --no-restore --no-build --configuration Release ${{ VersionArgs }} --include-symbols --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
+      run: dotnet pack ${{ env.PROJECT_PATH }} --no-restore --no-build --configuration Release ${{ env.VersionArgs }} --include-symbols --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
     
     - name: PushGithub
       # The github token is automatically being pulled from the workflow
