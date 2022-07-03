@@ -3,10 +3,5 @@
   <PropertyGroup>
 	<RootNamespace>Arda.Utilities</RootNamespace>
 	<AssemblyName>Arda.Utilities</AssemblyName>
-	<TargetFramework>net6.0</TargetFramework>
-	<Nullable>enable</Nullable>
-	<WarningsAsErrors>Nullable</WarningsAsErrors>
-	<LangVersion>10.0</LangVersion>
-	<NuspecFile>Arda.Utilities.nuspec</NuspecFile>
   </PropertyGroup>
 </Project>
