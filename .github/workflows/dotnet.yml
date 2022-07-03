@@ -5,7 +5,12 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-
+    
+env:
+  PROJECT_PATH: 'src/Arda.Utilities/Arda.Utilities.sln'
+  PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}\output'
+  NUGET_SOURCE_URL: 'https://nuget.pkg.github.com/ardabada/index.json'
+  
 jobs:
   build:
 
@@ -23,15 +28,14 @@ jobs:
       env:
         NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
     - name: Install dependencies
-      run: dotnet restore
+      run: dotnet restore ${{ env.PROJECT_PATH }}
     - name: Build
-      run: dotnet build --configuration Release --no-restore
-    - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
+   # - name: Test
+   #   run: dotnet test --no-restore --verbosity normal
     - name: Pack
-      run: dotnet pack --no-build --configuration Release
+      run: dotnet pack ${{ env.PROJECT_PATH }}  --no-build --configuration Release --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
     - name: PushGithub
       # The github token is automatically being pulled from the workflow
-      run: dotnet nuget push **/*.nupkg --no-symbols --skip-duplicate
-      env:
-        NUGET_AUTH_TOKEN: ${{ github.token }}
+      #run: dotnet nuget push **/*.nupkg --no-symbols --skip-duplicate 
+      run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}\*.nupkg -k ${{ github.token }} -s ${{ env.NUGET_SOURCE_URL }}
