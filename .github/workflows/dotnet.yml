@@ -8,7 +8,7 @@ on:
     
 env:
   PROJECT_PATH: 'src/Arda.Utilities/Arda.Utilities.sln'
-  PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}\output'
+  PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}/output'
   NUGET_SOURCE_URL: 'https://nuget.pkg.github.com/ardabada/index.json'
   
 jobs:
