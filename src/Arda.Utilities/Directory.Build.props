@@ -1,0 +1,16 @@
+<Project>
+
+	<PropertyGroup>
+		<LangVersion>10.0</LangVersion>
+        <TargetFramework>net6.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <WarningsAsErrors>Nullable</WarningsAsErrors>
+	</PropertyGroup>
+
+    
+	<PropertyGroup>
+		<RepositoryUrl>https://github.com/ardabada/ci-cd-playground.git</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+	</PropertyGroup>
+
+</Project>
