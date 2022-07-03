@@ -7,11 +7,6 @@
 	<Nullable>enable</Nullable>
 	<WarningsAsErrors>Nullable</WarningsAsErrors>
 	<LangVersion>10.0</LangVersion>
+	<NuspecFile>Arda.Utilities.nuspec</NuspecFile>
   </PropertyGroup>
-
-
-	<PropertyGroup>
-		<RepositoryUrl>https://github.com/ardabada/ci-cd-playground.git</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
-	</PropertyGroup>
 </Project>

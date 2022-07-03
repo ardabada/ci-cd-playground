@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+	  <id>Arda.Utilities</id>
+	  <summary>sample summary</summary>
+	  <description>sample decription</description>
+	  <requireLicenseAcceptance>false</requireLicenseAcceptance>
+	  <version>$version$</version>
+	  <repository type="git" url="https://github.com/ardabada/ci-cd-playground.git" />
+  </metadata>
+</package>
