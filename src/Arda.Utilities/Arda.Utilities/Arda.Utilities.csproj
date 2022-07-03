@@ -9,4 +9,9 @@
 	<LangVersion>10.0</LangVersion>
   </PropertyGroup>
 
+
+	<PropertyGroup>
+		<RepositoryUrl>https://github.com/ardabada/ci-cd-playground.git</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+	</PropertyGroup>
 </Project>
