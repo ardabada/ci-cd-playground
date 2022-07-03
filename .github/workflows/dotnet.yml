@@ -12,7 +12,9 @@ env:
   NUGET_SOURCE_URL: 'https://nuget.pkg.github.com/ardabada/index.json'
   MAJOR: 1
   MINOR: 0
-  ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+  PATCH: ${{ github.run_number }}
+  NugetVersion: ${{ MAJOR }}.${{ MINOR }}.${{ PATCH }}
+  VersionArgs: /p:Version=${{ NugetVersion }} /p:AssemblyVersion=${{ NugetVersion }} /p:FileVersion=${{ NugetVersion }}
   
 jobs:
   build:
@@ -32,22 +34,16 @@ jobs:
       env:
         NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
         
-    - uses: einaregilsson/build-number@v1
-      id: buildnumber
-      with:
-        token: ${{secrets.GITHUB_TOKEN}}
-        prefix: utils
-        
     - name: Install dependencies
       run: dotnet restore ${{ env.PROJECT_PATH }}
       
     - name: Build
-      run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore /p:Version=${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.steps.buildnumber.outputs.build_number }} /p:AssemblyVersion=${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.steps.buildnumber.outputs.build_number }} /p:FileVersion=${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.steps.buildnumber.outputs.build_number }}
+      run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore ${{ VersionArgs }}
    # - name: Test
    #   run: dotnet test --no-restore --verbosity normal
    
     - name: Pack
-      run: dotnet pack ${{ env.PROJECT_PATH }} --no-restore --no-build --configuration Release /p:Version=${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.steps.buildnumber.outputs.build_number }} /p:AssemblyVersion=${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.steps.buildnumber.outputs.build_number }} /p:FileVersion=${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.steps.buildnumber.outputs.build_number }} --include-symbols --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
+      run: dotnet pack ${{ env.PROJECT_PATH }} --no-restore --no-build --configuration Release ${{ VersionArgs }} --include-symbols --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
     
     - name: PushGithub
       # The github token is automatically being pulled from the workflow
