@@ -10,11 +10,7 @@ env:
   PROJECT_PATH: 'src/Arda.Utilities/Arda.Utilities.sln'
   PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}/output
   NUGET_SOURCE_URL: 'https://nuget.pkg.github.com/ardabada/index.json'
-  MAJOR: 1
-  MINOR: 0
-  PATCH: ${{ github.run_number }}
-  NugetVersion: ${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}
-  VersionArgs: /p:Version=${{ env.NugetVersion }} /p:AssemblyVersion=${{ env.NugetVersion }} /p:FileVersion=${{ env.NugetVersion }}
+  VersionArgs: /p:Version=1.0.${{ github.run_number }} /p:AssemblyVersion=1.0.${{ github.run_number }} /p:FileVersion=1.0.${{ github.run_number }}
   
 jobs:
   build:
