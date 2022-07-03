@@ -32,10 +32,10 @@ jobs:
       
     - name: Build
       run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
-	  
+      
     - name: Test
       run: dotnet test ${{ env.PROJECT_PATH }} --no-restore --verbosity normal
-	  
+      
     - name: Pack
       run: dotnet pack ${{ env.PROJECT_PATH }} --no-restore --no-build --configuration Release ${{ env.VersionArgs }} --include-symbols --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
     
