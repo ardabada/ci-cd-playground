@@ -2,8 +2,8 @@ name: Utils build
 
 on:
   push:
-    branches:
-      - '!main'
+    branches-ignore:
+      - 'main'
     paths:
       - 'src/Arda.Utilities/*'
     
