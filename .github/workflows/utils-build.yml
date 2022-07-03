@@ -2,8 +2,6 @@ name: Utils build
 
 on:
   push:
-    branches:
-      - '*'
     branches-ignore:
       - 'main'
     paths:
