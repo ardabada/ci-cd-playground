@@ -6,4 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+
+
+	<PropertyGroup>
+		<RepositoryUrl>https://github.com/ardabada/ci-cd-playground.git</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+	</PropertyGroup>
 </Project>
