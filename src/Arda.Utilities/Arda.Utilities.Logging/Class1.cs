@@ -1,6 +1,6 @@
 ﻿namespace Arda.Utilities.Logging
 {
-    public class Class1
+    public class Sample
     {
 
     }
