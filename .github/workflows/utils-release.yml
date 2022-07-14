@@ -47,8 +47,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
     - name: Pack
-      run: echo "Packing under version ${{ steps.version_gen.outputs.version }}" \
-           dotnet pack ${{ env.PROJECT_PATH }} --no-restore --no-build --configuration Release /p:Version=${{ steps.version_gen.outputs.version }} /p:AssemblyVersion=${{ steps.version_gen.outputs.version }} /p:FileVersion=${{ steps.version_gen.outputs.version }} --include-symbols --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
+      run: dotnet pack ${{ env.PROJECT_PATH }} --no-restore --no-build --configuration Release /p:Version=${{ steps.version_gen.outputs.version }} /p:AssemblyVersion=${{ steps.version_gen.outputs.version }} /p:FileVersion=${{ steps.version_gen.outputs.version }} --include-symbols --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
     
     - name: PushGithub
       run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}/*.nupkg -k ${{ github.token }} -s ${{ env.NUGET_SOURCE_URL }} --skip-duplicate
