@@ -7,7 +7,7 @@ jobs:
     steps:
       - name: Hello world action step
         id: hello
-        uses: ardabada/nuget-version-action@v0.5
+        uses: ardabada/nuget-version-action@v0.6
         with:
           major: 1
           minor: 2
