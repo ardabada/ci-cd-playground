@@ -7,14 +7,12 @@ jobs:
     steps:
       - name: Hello world action step
         id: hello
-        uses: ardabada/nuget-version-action@v0.7
+        uses: ardabada/nuget-version-action@v0.8
         with:
           major: 1
-          minor: 2
-          patch: 3
-          revision: 1222
+          minor: 0
           package_type: 'nuget'
-          pivot_package_name: 'Arda.Utilities2'
+          pivot_package_name: 'Arda.Utilities'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # Use the output from the `hello` step
       - name: Get the output time
