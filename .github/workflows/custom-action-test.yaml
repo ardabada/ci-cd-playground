@@ -7,9 +7,12 @@ jobs:
     steps:
       - name: Hello world action step
         id: hello
-        uses: ardabada/nuget-version-action@v0.2
+        uses: ardabada/nuget-version-action@v0.3
         with:
-          who-to-greet: 'Mona the Octocat'
+          major: 1
+          minor: 2
+          patch: 3
+          revision: 1222
       # Use the output from the `hello` step
       - name: Get the output time
         run: echo "The time was ${{ steps.hello.outputs.time }}"
