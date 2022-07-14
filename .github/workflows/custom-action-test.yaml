@@ -15,4 +15,4 @@ jobs:
           revision: 1222
       # Use the output from the `hello` step
       - name: Get the output time
-        run: echo "The time was ${{ steps.hello.outputs.time }}"
+        run: echo "The new version is ${{ steps.hello.outputs.version }}"
