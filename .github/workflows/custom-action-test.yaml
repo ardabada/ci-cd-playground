@@ -14,7 +14,7 @@ jobs:
           patch: 3
           revision: 1222
           package_type: 'nuget'
-          pivot_package_name: 'Arda.Utilities'
+          pivot_package_name: 'Arda.Utilities2'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # Use the output from the `hello` step
       - name: Get the output time
