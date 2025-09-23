@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36301.6 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arda.WebApp", "Arda.WebApp\Arda.WebApp.csproj", "{C1FDA0FE-0273-4860-88DC-7EE73C82ED5E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleTest", "SampleTest\SampleTest.csproj", "{357BDD91-8758-4D2D-A8FD-87F280C5CEAC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C1FDA0FE-0273-4860-88DC-7EE73C82ED5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1FDA0FE-0273-4860-88DC-7EE73C82ED5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1FDA0FE-0273-4860-88DC-7EE73C82ED5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1FDA0FE-0273-4860-88DC-7EE73C82ED5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{357BDD91-8758-4D2D-A8FD-87F280C5CEAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{357BDD91-8758-4D2D-A8FD-87F280C5CEAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{357BDD91-8758-4D2D-A8FD-87F280C5CEAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{357BDD91-8758-4D2D-A8FD-87F280C5CEAC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {795373A6-7643-4C91-8EFB-B23BCB3CD2C2}
+	EndGlobalSection
+EndGlobal
