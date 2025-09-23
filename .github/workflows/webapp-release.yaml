@@ -72,3 +72,42 @@ jobs:
 
     - name: Deploy to Prod server
       run: echo "Deploying to Prod server..."
+
+  create-release:
+    if: github.ref == 'refs/heads/main'
+    needs: deploy-to-prod
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: main-app
+          path: dist/main-app
+
+      - name: Create zip from artifact
+        run: |
+          mkdir -p dist
+          cd dist/main-app
+          zip -r ../webapp-v1.0.${{ github.run_number }}.zip ./
+          cd ../..
+
+      - name: Create release
+        id: create-release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: webapp-v1.0.${{ github.run_number }}
+          release_name: Web app release v1.0.${{ github.run_number }}
+          draft: false
+          prerelease: false
+          
+      - name: Upload release assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
+          asset_path: dist/webapp-v1.0.${{ github.run_number }}.zip
+          asset_name: webapp-v1.0.${{ github.run_number }}.zip
+          asset_content_type: application/zip
