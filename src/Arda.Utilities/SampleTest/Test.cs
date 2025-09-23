@@ -10,6 +10,7 @@ namespace SampleTest
             Assert.True(true);
         }
 
+        //dummy edits to trigger pipeline
         [Fact]
         public void Test2()
         {
