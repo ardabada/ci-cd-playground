@@ -82,6 +82,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: main-app
+          path: dist/main-app
+
+      - name: Create zip from artifact
+        run: |
+          mkdir -p dist
+          cd dist/main-app
+          zip -r ../another-service-v1.0.${{ github.run_number }}.zip ./
+          cd ../..
 
       - name: Create release
         id: create-release
@@ -100,6 +108,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create-release.outputs.upload_url }}
-          asset_path: ./app/publish
+          asset_path: dist/another-service-v1.0.${{ github.run_number }}.zip
           asset_name: another-service-v1.0.${{ github.run_number }}.zip
           asset_content_type: application/zip
