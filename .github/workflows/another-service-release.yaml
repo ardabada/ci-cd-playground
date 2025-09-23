@@ -1,4 +1,4 @@
-name: Webapp release (service 1)
+name: Another service release (service 2)
 
 on:
   push:

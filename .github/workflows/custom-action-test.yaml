@@ -1,3 +1,5 @@
+name: Custom Action Test
+
 on: [push]
 
 jobs:
