@@ -1,0 +1,35 @@
+name: Webapp build (service 1)
+
+on:
+  push:
+    branches-ignore: [ main ]
+    paths: [ 'src/Arda.WebApp/**' ]
+    
+env:
+  PROJECT_PATH: 'src/Arda.WebApp/Arda.WebApp.sln'
+  
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 9.0.*
+        source-url: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
+      env:
+        NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        
+    - name: Install dependencies
+      run: dotnet restore ${{ env.PROJECT_PATH }}
+      
+    - name: Build
+      run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
+      
+    - name: Test
+      run: dotnet test ${{ env.PROJECT_PATH }} --no-restore --verbosity normal
