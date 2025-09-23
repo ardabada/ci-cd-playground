@@ -45,6 +45,8 @@ jobs:
   deploy-to-dev:
     needs: build-and-test
     runs-on: ubuntu-latest
+    environment:
+      name: dev
 
     steps:
     - name: Download artifact
@@ -59,6 +61,8 @@ jobs:
     if: github.ref == 'refs/heads/main'
     needs: deploy-to-dev
     runs-on: ubuntu-latest
+    environment:
+      name: prod
 
     steps:
     - name: Download artifact
