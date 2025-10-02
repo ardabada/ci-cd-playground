@@ -1,0 +1,1 @@
+//changes of this file must add "javascript" label on pr
