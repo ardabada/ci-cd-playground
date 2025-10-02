@@ -1,0 +1,11 @@
+name: Sample action
+
+on:
+  workflow_dispatch:
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Greeting
+      run: echo "Hello"
