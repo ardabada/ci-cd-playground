@@ -43,3 +43,9 @@
           **/*.md
           **/*.mdx
           docs/**
+
+main:
+  - base-branch: 'main'
+
+feature:
+  - head-branch: [ '^feat', 'feat/' ]
