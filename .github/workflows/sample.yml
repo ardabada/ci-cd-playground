@@ -2,10 +2,15 @@ name: Sample action
 
 on:
   workflow_dispatch:
+    inputs:
+      name:
+        description: "Name"
+        required: true
+        type: string
     
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
     - name: Greeting
-      run: echo "Hello"
+      run: echo "Hello ${{ github.event.inputs.name }}"
