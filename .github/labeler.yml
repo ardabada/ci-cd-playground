@@ -52,4 +52,5 @@ main:
   - base-branch: 'main'
 
 feature:
-  - head-branch: [ '^feat', 'feat/' ]
+  - head-branch: [ '^feat/' ]
+    base-branch: 'main'
