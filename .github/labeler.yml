@@ -2,47 +2,51 @@
 
 ".NET":
   - changed-files:
-      - any-glob-to-any-file: |
-          **/*.cs
-          **/*.csproj
-          **/*.sln
-          **/*.props
-          **/*.targets
-          **/Directory.Packages.props
-          **/global.json
-          **/nuget.config
-          **/packages.config
+      - any-glob-to-any-file: [
+          '**/*.cs',
+          '**/*.csproj',
+          '**/*.sln',
+          '**/*.props',
+          '**/*.targets',
+          '**/Directory.Packages.props',
+          '**/global.json',
+          '**/nuget.config',
+          '**/packages.config'
+        ]
 
 "javascript":
   - changed-files:
-      - any-glob-to-any-file: |
-          **/*.{js,jsx,ts,tsx}
-          **/package.json
-          **/.eslintrc*
-          **/.prettierrc*
-          **/vite.config.*
-          **/webpack.config.*
-          **/rollup.config.*
+      - any-glob-to-any-file: [
+          '**/*.{js,jsx,ts,tsx}',
+          '**/package.json',
+          '**/.eslintrc*',
+          '**/.prettierrc*',
+          '**/vite.config.*',
+          '**/webpack.config.*',
+          '**/rollup.config.*'
+        ]
 
 "dependencies":
   - changed-files:
-      - any-glob-to-any-file: |
-          **/package-lock.json
-          **/yarn.lock
-          **/pnpm-lock.yaml
-          **/bun.lockb
-          **/Directory.Packages.props
-          **/nuget.config
-          **/packages.config
-          **/global.json
-          **/Gemfile.lock
+      - any-glob-to-any-file: [
+          '**/package-lock.json',
+          '**/yarn.lock',
+          '**/pnpm-lock.yaml',
+          '**/bun.lockb',
+          '**/Directory.Packages.props',
+          '**/nuget.config',
+          '**/packages.config',
+          '**/global.json',
+          '**/Gemfile.lock'
+        ]
 
 "documentation":
   - changed-files:
-      - any-glob-to-any-file: |
-          **/*.md
-          **/*.mdx
-          docs/**
+      - any-glob-to-any-file: [
+          '**/*.md',
+          '**/*.mdx',
+          'docs/**'
+        ]
 
 main:
   - base-branch: 'main'
