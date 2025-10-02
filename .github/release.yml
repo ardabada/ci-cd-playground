@@ -3,7 +3,6 @@ changelog:
     - title: New features
       labels:
         - feat
-        - main
 
     - title: Bug fixes
       labels:
@@ -11,4 +10,8 @@ changelog:
 
     - title: New enhancements
       labels:
-        - main
+        - enhancement
+        
+    - title: Other Changes
+      labels:
+        - "*"
