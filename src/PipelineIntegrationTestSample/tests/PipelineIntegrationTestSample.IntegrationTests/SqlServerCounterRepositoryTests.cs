@@ -6,6 +6,7 @@ using PipelineIntegrationTestSample.Abstractions;
 using PipelineIntegrationTestSample.SqlServer;
 using System;
 using System.Threading.Tasks;
+using Testcontainers.MsSql;
 using Xunit;
 
 namespace PipelineIntegrationTestSample.IntegrationTests;
@@ -14,6 +15,8 @@ public sealed class SqlServerCounterRepositoryTests : IAsyncLifetime
 {
     private readonly IConfiguration _cfg = TestConfig.Build();
     private IContainer? _container;
+    private MsSqlContainer? _mssqlContainer;
+    private bool useMsSqlContainerBuilder = true;
     private string? _cs;
 
     public async Task InitializeAsync()
@@ -27,19 +30,28 @@ public sealed class SqlServerCounterRepositoryTests : IAsyncLifetime
             return;
         }
 
-        _container = new ContainerBuilder()
-            .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
-            .WithName($"it-mssql-{Guid.NewGuid():N}")
-            .WithEnvironment("ACCEPT_EULA", "Y")
-            .WithEnvironment("MSSQL_SA_PASSWORD", "Your_password123")
-            .WithPortBinding(0, 1433)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(1433))
-            .Build();
+        if (useMsSqlContainerBuilder)
+        {
+            _mssqlContainer = new MsSqlBuilder().Build();
+            await _mssqlContainer.StartAsync();
+            _cs = _mssqlContainer.GetConnectionString();
+        }
+        else
+        {
+            _container = new ContainerBuilder()
+                .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
+                .WithName($"it-mssql-{Guid.NewGuid():N}")
+                .WithEnvironment("ACCEPT_EULA", "Y")
+                .WithEnvironment("MSSQL_SA_PASSWORD", "Your_password123")
+                .WithPortBinding(0, 1433)
+                .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(1433))
+                .Build();
 
-        await _container.StartAsync();
-        var host = _container.Hostname;
-        var port = _container.GetMappedPublicPort(1433);
-        _cs = $"Server={host},{port};User Id=sa;Password=Your_password123;TrustServerCertificate=True;Encrypt=False;Initial Catalog=master";
+            await _container.StartAsync();
+            var host = _container.Hostname;
+            var port = _container.GetMappedPublicPort(1433);
+            _cs = $"Server={host},{port};User Id=sa;Password=Your_password123;TrustServerCertificate=True;Encrypt=False;Initial Catalog=master";
+        }
 
         // create test DB
         await using var conn = new SqlConnection(_cs);
@@ -59,6 +71,8 @@ public sealed class SqlServerCounterRepositoryTests : IAsyncLifetime
     {
         if (_container is not null)
             await _container.DisposeAsync();
+        if (_mssqlContainer is not null)
+            await _mssqlContainer.DisposeAsync();
     }
 
     [Fact]
