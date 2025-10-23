@@ -12,8 +12,3 @@ changelog:
       labels:
         - enhancement
         - "tech debt"
-        
-    - title: Other Changes
-      labels:
-
-        - "*"
