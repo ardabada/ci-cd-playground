@@ -61,3 +61,7 @@ enhancement:
     - head-branch: ['^((?!feat/).)*$']
       base-branch: 'main'
 
+feature-wip:
+  - all:
+    - base-branch: [ '^feat/' ]
+    
