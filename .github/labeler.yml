@@ -55,3 +55,9 @@ feature:
   - all:
     - head-branch: [ '^feat/' ]
       base-branch: 'main'
+
+enhancement:
+  - all:
+    - head-branch: ['^((?!feat/).)*$']
+      base-branch: 'main'
+
