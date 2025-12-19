@@ -12,9 +12,9 @@ permissions:
 jobs:
   guard:
     runs-on: ubuntu-latest
+
     steps:
       - name: Validate + approve + label + comment (non-failing)
-        id: bot
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
@@ -38,6 +38,7 @@ jobs:
           upsert_comment() {
             local body="$1"
 
+            # Find existing bot comment with marker
             local cid
             cid="$(gh api "repos/$REPO/issues/$PR/comments?per_page=100" --jq \
               ".[] | select(.user.login==\"github-actions[bot]\" and (.body | contains(\"$MARKER\"))) | .id" \
@@ -50,21 +51,22 @@ jobs:
             fi
           }
 
+          # Helper: ensure label present/absent (ignore errors)
           ensure_label_present() {
             gh api -X POST "repos/$REPO/issues/$PR/labels" -f "labels[]=$LABEL" >/dev/null 2>&1 || true
           }
-
           ensure_label_absent() {
+            # DELETE label may 404 if not present — ignore
             gh api -X DELETE "repos/$REPO/issues/$PR/labels/$LABEL" >/dev/null 2>&1 || true
           }
 
-          # PR metadata
+          # Fetch PR metadata (mergeability etc.)
           pr_json="$(gh api "repos/$REPO/pulls/$PR")"
           draft="$(echo "$pr_json" | jq -r '.draft')"
-          mergeable="$(echo "$pr_json" | jq -r '.mergeable')"               # true/false/null
-          mergeable_state="$(echo "$pr_json" | jq -r '.mergeable_state')"   # clean/dirty/blocked/unknown/...
+          mergeable="$(echo "$pr_json" | jq -r '.mergeable')"          # true/false/null
+          mergeable_state="$(echo "$pr_json" | jq -r '.mergeable_state')"  # clean/dirty/blocked/unknown/...
 
-          # PR commits
+          # Fetch PR commits
           commits_json="$(gh api "repos/$REPO/pulls/$PR/commits?per_page=100")"
           commits_count="$(echo "$commits_json" | jq 'length')"
 
@@ -83,19 +85,24 @@ jobs:
               p1="$(echo "$commits_json" | jq -r '.[0].parents[0].sha')"
               p2="$(echo "$commits_json" | jq -r '.[0].parents[1].sha')"
 
+              # Check that one parent is from BASE history and the other is from MAIN history.
+              # We use compare API status:
+              # - If base is ancestor of parent, comparing BASE...P returns status "behind" or "identical"
               compare_status() {
                 local base="$1"
                 local head="$2"
                 gh api "repos/$REPO/compare/$base...$head" --jq '.status'
               }
 
-              base_p1="$(compare_status "$BASE_REF" "$p1" 2>/dev/null || echo "error")"
-              base_p2="$(compare_status "$BASE_REF" "$p2" 2>/dev/null || echo "error")"
-              main_p1="$(compare_status "main" "$p1" 2>/dev/null || echo "error")"
-              main_p2="$(compare_status "main" "$p2" 2>/dev/null || echo "error")"
+              base_p1="$(compare_status "$BASE_REF" "$p1" || echo "error")"
+              base_p2="$(compare_status "$BASE_REF" "$p2" || echo "error")"
+              main_p1="$(compare_status "main" "$p1" || echo "error")"
+              main_p2="$(compare_status "main" "$p2" || echo "error")"
 
-              is_base_on_p1="false"; is_base_on_p2="false"
-              is_main_on_p1="false"; is_main_on_p2="false"
+              is_base_on_p1="false"
+              is_base_on_p2="false"
+              is_main_on_p1="false"
+              is_main_on_p2="false"
 
               [[ "$base_p1" == "behind" || "$base_p1" == "identical" ]] && is_base_on_p1="true"
               [[ "$base_p2" == "behind" || "$base_p2" == "identical" ]] && is_base_on_p2="true"
@@ -105,9 +112,9 @@ jobs:
               if { [[ "$is_base_on_p1" == "true" && "$is_main_on_p2" == "true" ]] || [[ "$is_base_on_p2" == "true" && "$is_main_on_p1" == "true" ]]; }; then
                 valid="true"
               else
-                why_invalid="Merge commit parents do not match a pure sync. One parent must come from '$BASE_REF' history and the other from 'main' history.
-BASE...p1=$base_p1, BASE...p2=$base_p2
-main...p1=$main_p1, main...p2=$main_p2"
+                why_invalid="The merge commit parents do not match a pure sync: one parent must come from '$BASE_REF' history and the other from 'main' history.
+                  BASE...p1 status=$base_p1, BASE...p2 status=$base_p2
+                  main...p1 status=$main_p1, main...p2 status=$main_p2"
               fi
             fi
           fi
@@ -119,64 +126,69 @@ main...p1=$main_p1, main...p2=$main_p2"
             ensure_label_absent
           fi
 
-          # 2) Auto-approve (only if clean + mergeable)
+          # 2) If valid, try auto-approve with relevant message (only when "clean")
           approved="false"
           approve_reason=""
 
           if [[ "$valid" == "true" ]]; then
             if [[ "$draft" == "true" ]]; then
-              approve_reason="PR is draft."
-            elif [[ "$mergeable" == "true" && "$mergeable_state" == "clean" ]]; then
-              set +e
-              gh pr review "$PR" --approve -b "Auto-approved: merge-only sync of 'main' into '$BASE_REF'." >/dev/null 2>&1
-              rc=$?
-              set -e
-              if [[ $rc -eq 0 ]]; then
-                approved="true"
-              else
-                approve_reason="GitHub rejected auto-approval (branch protection/bot approval policy/etc.)."
-              fi
+              approve_reason="PR is draft, will not auto-approve."
             else
-              approve_reason="PR is not clean/mergeable yet (mergeable=$mergeable, state=$mergeable_state)."
+              # mergeable can be null briefly; mergeable_state can be unknown briefly.
+              # For approval, we require clean + mergeable true.
+              if [[ "$mergeable" == "true" && "$mergeable_state" == "clean" ]]; then
+                set +e
+                gh pr review "$PR" --approve -b "Auto-approved: merge-only sync of \`main\` into \`$BASE_REF\`." >/dev/null 2>&1
+                rc=$?
+                set -e
+
+                if [[ $rc -eq 0 ]]; then
+                  approved="true"
+                else
+                  approve_reason="GitHub rejected auto-approval (branch protection/bot approval policy/etc.)."
+                fi
+              else
+                approve_reason="PR is not clean/mergeable yet (mergeable=$mergeable, state=$mergeable_state)."
+              fi
             fi
           fi
 
-          # Build comment bodies safely
+          # 3,4,5,8) Comment behavior (never fail; single comment updated)
           if [[ "$valid" == "true" ]]; then
             if [[ "$approved" == "true" ]]; then
-              body="$MARKER
-✅ **Valid merge-only sync PR**: 'main' → '$BASE_REF'
+              upsert_comment "$MARKER
+                  ✅ **Detected a valid merge-only sync PR**: \`main\` → \`$BASE_REF\`.
 
-- Label: '$LABEL' ensured
-- Review: **Auto-approved**
+                  - Label: \`$LABEL\` ensured
+                  - Review: **Auto-approved** with message
 
-_(This comment is maintained by the bot and will be updated, not duplicated.)_"
-              upsert_comment "$body"
-            else
-              body="$MARKER
-⚠️ **Valid merge-only sync PR**: 'main' → '$BASE_REF' — but **auto-approval was not applied**
+                  _(This comment is maintained by the bot and will be updated, not duplicated.)_"
+                              else
+                                upsert_comment "$MARKER
+                  ⚠️ **Valid merge-only sync PR** detected: \`main\` → \`$BASE_REF\`, but **auto-approval was not applied**.
 
-**Summary**
-- Label: '$LABEL' ensured
-- Auto-approve: not performed
-- Reason: $approve_reason
-- Mergeability: mergeable='$mergeable', state='$mergeable_state'"
-              upsert_comment "$body"
+                  **Summary**
+                  - Label: \`$LABEL\` ensured
+                  - Auto-approve: **not performed**
+                  - Reason: $approve_reason
+                  - Mergeability: mergeable=\`$mergeable\`, state=\`$mergeable_state\`
+
+                  Next steps: resolve conflicts / wait for mergeability, or adjust branch protection to allow bot approvals (or use a bot PAT)."
             fi
           else
-            body="$MARKER
-ℹ️ This PR targets '$BASE_REF' but does **not** look like a pure “merge main → feat” sync PR.
+            # "write a comment saying what this pr is about"
+            upsert_comment "$MARKER
+                  ℹ️ This PR targets **\`$BASE_REF\`** but it does **not** look like a pure “merge main → feat” sync PR, so it was **not auto-approved** and label \`$LABEL\` is **removed (if present)**.
 
-**What I see**
-- Head: '$HEAD_REF'
-- Base: '$BASE_REF'
-- Commits: $commits_count
+                  **What I see**
+                  - Head: \`$HEAD_REF\`
+                  - Base: \`$BASE_REF\`
+                  - Commits in PR: \`$commits_count\`
 
-**Why it’s not considered a sync PR**
-$why_invalid
+                  **Why it’s not considered a sync PR**
+                  - $why_invalid
 
-If this is meant to be a sync PR: create a branch from '$BASE_REF', merge 'main' into it (resolve conflicts), and open a PR containing **only that merge commit**."
-            upsert_comment "$body"
+                  If this is meant to be a sync PR: create a branch from \`$BASE_REF\`, merge \`main\` into it (resolve conflicts), and open a PR containing **only that merge commit**."
           fi
 
           # 4) Never fail the pipeline
