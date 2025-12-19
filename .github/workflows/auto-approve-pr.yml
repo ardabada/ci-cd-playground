@@ -113,8 +113,8 @@ jobs:
                 valid="true"
               else
                 why_invalid="The merge commit parents do not match a pure sync: one parent must come from '$BASE_REF' history and the other from 'main' history.
-BASE...p1 status=$base_p1, BASE...p2 status=$base_p2
-main...p1 status=$main_p1, main...p2 status=$main_p2"
+                  BASE...p1 status=$base_p1, BASE...p2 status=$base_p2
+                  main...p1 status=$main_p1, main...p2 status=$main_p2"
               fi
             fi
           fi
@@ -157,38 +157,38 @@ main...p1 status=$main_p1, main...p2 status=$main_p2"
           if [[ "$valid" == "true" ]]; then
             if [[ "$approved" == "true" ]]; then
               upsert_comment "$MARKER
-✅ **Detected a valid merge-only sync PR**: \`main\` → \`$BASE_REF\`.
+                  ✅ **Detected a valid merge-only sync PR**: \`main\` → \`$BASE_REF\`.
 
-- Label: \`$LABEL\` ensured
-- Review: **Auto-approved** with message
+                  - Label: \`$LABEL\` ensured
+                  - Review: **Auto-approved** with message
 
-_(This comment is maintained by the bot and will be updated, not duplicated.)_"
-            else
-              upsert_comment "$MARKER
-⚠️ **Valid merge-only sync PR** detected: \`main\` → \`$BASE_REF\`, but **auto-approval was not applied**.
+                  _(This comment is maintained by the bot and will be updated, not duplicated.)_"
+                              else
+                                upsert_comment "$MARKER
+                  ⚠️ **Valid merge-only sync PR** detected: \`main\` → \`$BASE_REF\`, but **auto-approval was not applied**.
 
-**Summary**
-- Label: \`$LABEL\` ensured
-- Auto-approve: **not performed**
-- Reason: $approve_reason
-- Mergeability: mergeable=\`$mergeable\`, state=\`$mergeable_state\`
+                  **Summary**
+                  - Label: \`$LABEL\` ensured
+                  - Auto-approve: **not performed**
+                  - Reason: $approve_reason
+                  - Mergeability: mergeable=\`$mergeable\`, state=\`$mergeable_state\`
 
-Next steps: resolve conflicts / wait for mergeability, or adjust branch protection to allow bot approvals (or use a bot PAT)."
+                  Next steps: resolve conflicts / wait for mergeability, or adjust branch protection to allow bot approvals (or use a bot PAT)."
             fi
           else
             # "write a comment saying what this pr is about"
             upsert_comment "$MARKER
-ℹ️ This PR targets **\`$BASE_REF\`** but it does **not** look like a pure “merge main → feat” sync PR, so it was **not auto-approved** and label \`$LABEL\` is **removed (if present)**.
+                  ℹ️ This PR targets **\`$BASE_REF\`** but it does **not** look like a pure “merge main → feat” sync PR, so it was **not auto-approved** and label \`$LABEL\` is **removed (if present)**.
 
-**What I see**
-- Head: \`$HEAD_REF\`
-- Base: \`$BASE_REF\`
-- Commits in PR: \`$commits_count\`
+                  **What I see**
+                  - Head: \`$HEAD_REF\`
+                  - Base: \`$BASE_REF\`
+                  - Commits in PR: \`$commits_count\`
 
-**Why it’s not considered a sync PR**
-- $why_invalid
+                  **Why it’s not considered a sync PR**
+                  - $why_invalid
 
-If this is meant to be a sync PR: create a branch from \`$BASE_REF\`, merge \`main\` into it (resolve conflicts), and open a PR containing **only that merge commit**."
+                  If this is meant to be a sync PR: create a branch from \`$BASE_REF\`, merge \`main\` into it (resolve conflicts), and open a PR containing **only that merge commit**."
           fi
 
           # 4) Never fail the pipeline
