@@ -56,5 +56,4 @@ jobs:
 
           echo "✅ Validation passed: head contains base and main."
           
-          gh pr review "${{ github.event.pull_request.number }}" --approve
-          gh pr comment "$PR" --body "🤖 Auto-approved: syncing main into feature branch"
+          gh pr review "${{ github.event.pull_request.number }}" --approve --body "🤖 Auto-approved: syncing main into feature branch"
