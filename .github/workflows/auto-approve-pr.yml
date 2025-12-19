@@ -12,15 +12,16 @@ jobs:
   auto-approve:
     runs-on: ubuntu-latest
 
-    if: |
-      !github.event.pull_request.draft &&
-      startsWith(github.event.pull_request.base.ref, 'feat/') &&
-      contains(github.event.pull_request.labels.*.name, 'main-to-feat')
+    # if: |
+    #   !github.event.pull_request.draft &&
+    #   startsWith(github.event.pull_request.base.ref, 'feat/') &&
+    #   contains(github.event.pull_request.labels.*.name, 'main-to-feat')
 
     steps:
       - name: Auto-approve PR
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr review "${{ github.event.pull_request.number }}" --approve
-          gh pr comment "$PR" --body "🤖 Auto-approved: syncing main into feature branch"
+          echo "${{ github.event.pull_request.base.ref }}"
+          # gh pr review "${{ github.event.pull_request.number }}" --approve
+          # gh pr comment "$PR" --body "🤖 Auto-approved: syncing main into feature branch"
