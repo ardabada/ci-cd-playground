@@ -1,27 +1,59 @@
-name: Auto-approve PRs labeled main-to-feat
+name: Validate sync branch (from feat/* and includes main)
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize, labeled, unlabeled, ready_for_review]
+    types: [opened, synchronize, reopened, ready_for_review]
 
 permissions:
-  pull-requests: write
   contents: read
 
 jobs:
-  auto-approve:
+  validate:
     runs-on: ubuntu-latest
 
-    # if: |
-    #   !github.event.pull_request.draft &&
-    #   startsWith(github.event.pull_request.base.ref, 'feat/') &&
-    #   contains(github.event.pull_request.labels.*.name, 'main-to-feat')
-
     steps:
-      - name: Auto-approve PR
+      - name: Checkout PR head (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Fetch base + main refs
+        run: |
+          git fetch --no-tags --prune origin \
+            "+refs/heads/${{ github.event.pull_request.base.ref }}:refs/remotes/origin/${{ github.event.pull_request.base.ref }}" \
+            "+refs/heads/main:refs/remotes/origin/main"
+
+      - name: Validate ancestry rules
+        shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "${{ github.event.pull_request.base.ref }}"
-          # gh pr review "${{ github.event.pull_request.number }}" --approve
-          # gh pr comment "$PR" --body "🤖 Auto-approved: syncing main into feature branch"
+          set -euo pipefail
+
+          BASE="origin/${{ github.event.pull_request.base.ref }}"
+          MAIN="origin/main"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+
+          echo "BASE=$BASE"
+          echo "MAIN=$MAIN"
+          echo "HEAD_SHA=$HEAD_SHA"
+
+          # 1) Head must include the current base branch tip (i.e., branch created from base and not missing base commits)
+          if ! git merge-base --is-ancestor "$BASE" "$HEAD_SHA"; then
+            echo "::error::PR branch does NOT contain the base branch tip ($BASE). Rebase/merge your branch on top of '${{ github.event.pull_request.base.ref }}' first."
+            echo "Hint: merge-base is $(git merge-base "$BASE" "$HEAD_SHA")"
+            exit 1
+          fi
+
+          # 2) Head must include the current main tip (i.e., main has been merged/rebased into the branch)
+          if ! git merge-base --is-ancestor "$MAIN" "$HEAD_SHA"; then
+            echo "::error::PR branch does NOT contain 'main' ($MAIN). Merge or rebase 'main' into your branch."
+            echo "Hint: merge-base is $(git merge-base "$MAIN" "$HEAD_SHA")"
+            exit 1
+          fi
+
+          echo "✅ Validation passed: head contains base and main."
+          
+          gh pr review "${{ github.event.pull_request.number }}" --approve
+          gh pr comment "$PR" --body "🤖 Auto-approved: syncing main into feature branch"
