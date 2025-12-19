@@ -1,8 +1,8 @@
-name: Auto-approve main → feat PRs
+name: Auto-approve PRs labeled main-to-feat
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [opened, reopened, synchronize, labeled, unlabeled, ready_for_review]
 
 permissions:
   pull-requests: write
@@ -13,8 +13,9 @@ jobs:
     runs-on: ubuntu-latest
 
     if: |
-      github.event.pull_request.head.ref == 'main' &&
-      startsWith(github.event.pull_request.base.ref, 'feat/')
+      !github.event.pull_request.draft &&
+      startsWith(github.event.pull_request.base.ref, 'feat/') &&
+      contains(github.event.pull_request.labels.*.name, 'main-to-feat')
 
     steps:
       - name: Auto-approve PR
