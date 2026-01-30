@@ -42,6 +42,15 @@ jobs:
         name: main-app
         path: app/publish
 
+  terraform-plan:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    steps:
+      - name: Terraform plan
+        run: echo "Terraform plan"
+
   deploy-to-dev:
     needs: build-and-test
     runs-on: ubuntu-latest
