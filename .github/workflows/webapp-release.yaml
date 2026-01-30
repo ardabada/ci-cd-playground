@@ -52,7 +52,7 @@ jobs:
         run: echo "Terraform plan"
 
   deploy-to-dev:
-    needs: build-and-test
+    needs: terraform-plan
     runs-on: ubuntu-latest
     environment:
       name: dev
