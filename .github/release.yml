@@ -1,0 +1,14 @@
+changelog:
+  categories:
+    - title: New features
+      labels:
+        - feat
+
+    - title: Bug fixes
+      labels:
+        - bug
+
+    - title: New enhancements
+      labels:
+        - enhancement
+        - "tech debt"
