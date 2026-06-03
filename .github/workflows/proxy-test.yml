@@ -1,0 +1,35 @@
+name: Run SOCKS5 Proxy
+
+on: [workflow_dispatch]
+
+jobs:
+  tor-proxy-job:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install Tor
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y tor
+
+    - name: Configure Tor Exit Node
+      run: |
+        echo "ExitNodes {md}" | sudo tee -a /etc/tor/torrc
+        echo "StrictNodes 1" | sudo tee -a /etc/tor/torrc
+        
+        tor --verify-config
+
+    - name: Start Tor Service
+      run: |
+        sudo systemctl start tor
+        
+        timeout 30s bash -c 'until curl --socks5-hostname 127.0.0.1:9050 -s https://torproject.org | grep -q "Congratulations"; do sleep 2; done' || true
+
+    - name: Test Proxy and Verify Country
+      run: |
+        echo "Testing Tor proxy connection..."
+        curl --socks5-hostname 127.0.0.1:9050 https://ipinfo.io
+        
