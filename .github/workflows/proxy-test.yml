@@ -29,19 +29,35 @@ jobs:
         echo "Waiting for Tor to download directory consensus (this can take 1-2 minutes)..."
         timeout 120s bash -c 'until sudo journalctl -u tor@default | grep -q "Bootstrapped 100%"; do sleep 2; done' || echo "Timeout reached during bootstrap."
 
-    - name: Test Proxy and Verify IP
+    - name: Test Proxy and Enforce Constraints
       run: |
         echo "Testing Tor proxy connection..."
-        RESPONSE=$(curl --max-time 30 --fail --socks5-hostname 127.0.0.1:9050 -s https://check.torproject.org/api/ip)
         
-        IS_TOR=$(echo $RESPONSE | jq -r .IsTor)
-        IP_ADDRESS=$(echo $RESPONSE | jq -r .IP)
+        TOR_RESPONSE=$(curl --max-time 30 --fail --socks5-hostname 127.0.0.1:9050 -s https://check.torproject.org/api/ip)
+        IS_TOR=$(echo $TOR_RESPONSE | jq -r .IsTor)
+        IP_ADDRESS=$(echo $TOR_RESPONSE | jq -r .IP)
         
+        COUNTRY=$(curl --max-time 30 --fail --socks5-hostname 127.0.0.1:9050 -s https://ipinfo.io/country | tr -d '\n')
+        
+        echo "----------------------------------------"
+        echo "Diagnostic Results:"
         echo "Is Tor? $IS_TOR"
         echo "Current IP: $IP_ADDRESS"
+        echo "Country Code: $COUNTRY"
+        echo "----------------------------------------"
+        
+        if [ "$IS_TOR" != "true" ]; then
+          echo "::error:: Traffic is not routing through Tor."
+          exit 1
+        fi
+        
+        if [ "$COUNTRY" != "MD" ]; then
+          echo "::error:: Exit node country is $COUNTRY, expected MD."
+          exit 1
+        fi
 
     - name: Dump Tor Logs on Failure
       if: failure()
       run: |
-        echo "Tor failed. Dumping the last 50 lines of logs to see where the cold start stalled:"
+        echo "Pipeline failed. Dumping the last 50 lines of Tor logs:"
         sudo journalctl -u tor@default -n 50 --no-pager
