@@ -13,7 +13,7 @@ jobs:
     - name: Install Tor
       run: |
         sudo apt-get update
-        sudo apt-get install -y tor
+        sudo apt-get install -y tor jq
 
     - name: Configure Tor Exit Node
       run: |
@@ -22,13 +22,26 @@ jobs:
         
         tor --verify-config
 
-    - name: Restart Tor Service
+    - name: Restart Tor and Wait for Cold Boot
       run: |
         sudo systemctl restart tor
         
-        timeout 30s bash -c 'until curl --socks5-hostname 127.0.0.1:9050 -s https://check.torproject.org/ | grep -q "Congratulations"; do sleep 2; done' || true
+        echo "Waiting for Tor to download directory consensus (this can take 1-2 minutes)..."
+        timeout 120s bash -c 'until sudo journalctl -u tor@default | grep -q "Bootstrapped 100%"; do sleep 2; done' || echo "Timeout reached during bootstrap."
 
-    - name: Test Proxy and Verify Country
+    - name: Test Proxy and Verify IP
       run: |
         echo "Testing Tor proxy connection..."
-        curl --socks5-hostname 127.0.0.1:9050 https://ipinfo.io/country
+        RESPONSE=$(curl --max-time 30 --fail --socks5-hostname 127.0.0.1:9050 -s https://check.torproject.org/api/ip)
+        
+        IS_TOR=$(echo $RESPONSE | jq -r .IsTor)
+        IP_ADDRESS=$(echo $RESPONSE | jq -r .IP)
+        
+        echo "Is Tor? $IS_TOR"
+        echo "Current IP: $IP_ADDRESS"
+
+    - name: Dump Tor Logs on Failure
+      if: failure()
+      run: |
+        echo "Tor failed. Dumping the last 50 lines of logs to see where the cold start stalled:"
+        sudo journalctl -u tor@default -n 50 --no-pager
