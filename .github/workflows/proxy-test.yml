@@ -22,14 +22,13 @@ jobs:
         
         tor --verify-config
 
-    - name: Start Tor Service
+    - name: Restart Tor Service
       run: |
-        sudo systemctl start tor
+        sudo systemctl restart tor
         
-        timeout 30s bash -c 'until curl --socks5-hostname 127.0.0.1:9050 -s https://torproject.org | grep -q "Congratulations"; do sleep 2; done' || true
+        timeout 30s bash -c 'until curl --socks5-hostname 127.0.0.1:9050 -s https://check.torproject.org/ | grep -q "Congratulations"; do sleep 2; done' || true
 
     - name: Test Proxy and Verify Country
       run: |
         echo "Testing Tor proxy connection..."
-        curl --socks5-hostname 127.0.0.1:9050 https://ipinfo.io
-        
+        curl --socks5-hostname 127.0.0.1:9050 https://ipinfo.io/country
