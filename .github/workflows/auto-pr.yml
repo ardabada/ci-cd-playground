@@ -29,6 +29,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "docs: update auto-sample.txt with input"
           title: "Update auto-sample.txt"
+          sign-commits: true
           body: "This PR updates `data/auto-sample.txt` with new content provided via workflow dispatch."
           branch: "update-sample-text-${{ github.run_id }}"
           delete-branch: true
