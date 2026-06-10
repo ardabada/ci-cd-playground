@@ -1,0 +1,34 @@
+name: Auto Update Sample Text
+on:
+  workflow_dispatch:
+    inputs:
+      text:
+        description: 'The text to write into the file'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-file:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Update Data File
+        run: |
+          mkdir -p data
+          echo "${{ inputs.text }}" > data/auto-sample.txt
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "docs: update auto-sample.txt with input"
+          title: "Update auto-sample.txt"
+          body: "This PR updates `data/auto-sample.txt` with new content provided via workflow dispatch."
+          branch: "update-sample-text-${{ github.run_id }}"
+          delete-branch: true
